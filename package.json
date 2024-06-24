@@ -1,0 +1,15 @@
+{
+  "name": "crash-express",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start" : "node server",
+    "dev" : "node --watch --env-file=.env server"
+  },
+  "author": "Jonathan Alva",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
