@@ -1,41 +1,32 @@
 // imports
-const express = require('express')
-const path = require('path')
+import express from 'express'
+import posts from './routes/posts.js'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import logger from './middleware/logger.js'
+import {errorHandler, notFound} from './middleware/error.js'
 const port = process.env.PORT || 8000
+
+// Get directory name
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const app = express()
 
+// Body parser middleware
+app.use(express.json())
+app.use(express.urlencoded({extended: false}))
+
+// Logger middleware
+app.use(logger)
+
 // Setup static folder
+app.use(express.static(path.join(__dirname, 'public')))
 
-// app.use(express.static(path.join(__dirname, 'public')))
-
-let posts = [
-    {id: 1, title: 'Post 1'},
-    {id: 2, title: 'Post 2'},
-    {id: 3, title: 'Post 3'},
-    {id: 4, title: 'Post 4'}
-]
-
-// Get all posts
-app.get('/api/posts', (req,res) => {
-    const limit = parseInt(req.query.limit)
-
-    if(!isNaN(limit) && limit > 0) {
-        return res.status(200).json(posts.slice(0,limit))
-    } 
-        res.status(200).json(posts)
-
-})
-
-// Get a single post
-app.get('/api/posts/:id', (req,res) => {
-    const id = parseInt(req.params.id)
-    const post = posts.find((post) => post.id ===id)
-    if (!post) {
-        return res.status(400).json({ msg: `A post with the id of ${id} was not found`})
-    } 
-        res.status(200).json(post)
-
-})
+// Routes
+app.use('/api/posts', posts)
+app.use(notFound)
+// error handler
+app.use(errorHandler)
 
 app.listen(port, () => console.log(`Server running on port ${port}`))
